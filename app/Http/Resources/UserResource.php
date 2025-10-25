@@ -17,8 +17,13 @@ class UserResource extends JsonResource
         return [
             'id' => $this->uuid,
             'fullName' => "$this->first_name $this->last_name",
+            'firstName' => $this->first_name,
+            'lastName' => $this->last_name,
             'mailingAddress' => $this->email,
             'phoneNumber' => $this->phone,
+            'position' => $this->roles->first()->name,
+            'role' => RoleResource::collection($this->roles),
+            'department' => new DepartmentResource($this->profile()->with('department')->first()->department)
         ];
     }
 }

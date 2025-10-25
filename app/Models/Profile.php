@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Profile extends Model
 {
@@ -17,6 +18,7 @@ class Profile extends Model
     protected $fillable = [
         'uuid',
         'user_id',
+        'department_id',
         'company_phone',
         'company_email',
         'address',
@@ -24,4 +26,16 @@ class Profile extends Model
         'fired_at',
         'is_retired',
     ];
+
+    // Relationships
+
+    /**
+     * The roles that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
 }

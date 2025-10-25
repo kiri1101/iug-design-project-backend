@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Action\SendResetLink;
-use App\Action\UpdatingPassword;
+use App\Action\ResettingPassword;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\InitiatePasswordResetRequest;
 use App\Http\Requests\UpdatePasswordRequest;
@@ -19,9 +19,9 @@ class PasswordResetController extends Controller
 
     public function updatingPassword(
         UpdatePasswordRequest $updatePasswordRequest,
-        UpdatingPassword $updatingPassword
+        ResettingPassword $resettingPassword
     ): JsonResponse {
-        return $updatingPassword->reset(
+        return $resettingPassword->reset(
             $updatePasswordRequest->input('token'),
             $updatePasswordRequest->input('new_secret')
         );
