@@ -8,7 +8,7 @@ use App\Http\Controllers\BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class UpdatingPassword extends BaseController
+class ResettingPassword extends BaseController
 {
     public function reset(string $token, string $password): JsonResponse
     {
