@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Action\ManagerCreateUser;
-use App\Action\ManagerUpdateUser;
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\BaseController;
+use App\Models\Department;
 
 class UserController extends BaseController
 {
@@ -30,32 +33,93 @@ class UserController extends BaseController
         ]);
     }
 
-    public function store(CreateUserRequest $createUserRequest, ManagerCreateUser $managerCreateUser): JsonResponse
+    public function store(CreateUserRequest $createUserRequest): JsonResponse
     {
-        return $managerCreateUser->store(
-            $createUserRequest->input('firstName'),
-            $createUserRequest->input('lastName'),
-            $createUserRequest->input('mailingAddress'),
-            $createUserRequest->input('phoneNumber'),
-            $createUserRequest->input('department')['id'],
-            $createUserRequest->input('position')['id']
-        );
+        DB::beginTransaction();
+
+        $role = Role::withUuid($createUserRequest->input('position')['id'])->first();
+        $department = Department::withUuid($createUserRequest->input('department')['id'])->first();
+
+        try {
+            $user = User::create([
+                'uuid' => Str::uuid()->toString(),
+                'first_name' => $createUserRequest->input('firstName'),
+                'last_name' => $createUserRequest->input('lastName'),
+                'email' => $createUserRequest->input('mailingAddress'),
+                'phone' => str_replace('-', '', $createUserRequest->input('phoneNumber')),
+                'password' => Hash::make('123123123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // save user role
+            $user->roles()->attach($role->id, [
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // create user profile
+            $user->profile()->create([
+                'uuid' => Str::uuid()->toString(),
+                'department_id' => $department->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse('User created successfully.', [
+                'user' => new UserResource($user)
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 
     public function update(
         User $user,
-        CreateUserRequest $createUserRequest,
-        ManagerUpdateUser $managerUpdateUser
+        CreateUserRequest $createUserRequest
     ): JsonResponse {
-        return $managerUpdateUser->update(
-            $user,
-            $createUserRequest->input('firstName'),
-            $createUserRequest->input('lastName'),
-            $createUserRequest->input('mailingAddress'),
-            $createUserRequest->input('phoneNumber'),
-            $createUserRequest->input('department')['id'],
-            $createUserRequest->input('position')['id']
-        );
+        DB::beginTransaction();
+
+        $role = Role::withUuid($createUserRequest->input('position')['id'])->first();
+        $department = Department::withUuid($createUserRequest->input('department')['id'])->first();
+
+        try {
+            $user->update([
+                'first_name' => $createUserRequest->input('firstName'),
+                'last_name' => $createUserRequest->input('lastName'),
+                'email' => $createUserRequest->input('mailingAddress'),
+                'phone' => str_replace('-', '', $createUserRequest->input('phoneNumber')),
+            ]);
+
+            // update user role if incoming role is different
+            if ($user->roles->first()->id !== $role->id) {
+                $user->roles()->delete();
+
+                $user->roles()->attach($role->id, [
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            // create user profile
+            $user->profile()->update([
+                'department_id' => $department->id,
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse('User updated successfully.', [
+                'user' => new UserResource($user)
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 
     public function delete(User $user): JsonResponse
