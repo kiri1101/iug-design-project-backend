@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -9,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PasswordReset extends Mailable implements ShouldQueue
+class LeaveRequested extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -17,10 +18,9 @@ class PasswordReset extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public function __construct(
-        public string $url
-    ) {
-        //
-    }
+        public User $user,
+        public string $message
+    ) {}
 
     /**
      * Get the message envelope.
@@ -28,7 +28,7 @@ class PasswordReset extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Password Reset',
+            subject: 'Leave Requested',
         );
     }
 
@@ -38,7 +38,17 @@ class PasswordReset extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.password.reset',
+            markdown: 'mail.leave.request',
         );
+    }
+
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
     }
 }

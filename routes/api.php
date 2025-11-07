@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,5 +28,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('create', 'store');
         Route::post('{user:uuid}/update', 'update');
         Route::post('{user:uuid}/delete', 'delete');
+    });
+
+    Route::prefix('/leave')->controller(LeaveController::class)->group(function () {
+        Route::get('list', 'list');
+        Route::post('store', 'store');
+        Route::post('{leave:uuid}/update', 'updateLeave');
+        Route::post('{leave:uuid}/delete', 'deleteLeave');
+        Route::post('{leave:uuid}/status/update', 'updateLeaveStatus');
     });
 });

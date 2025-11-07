@@ -6,14 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 
-class Department extends Model
+class LeaveType extends Model
 {
-    public const int EXECUTIVE = 1;
-    public const int TECHNICAL = 2;
-    public const int PRODUCT = 3;
-    public const int FINANCIAL = 4;
-    public const int HR = 5;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -27,7 +21,7 @@ class Department extends Model
     // Scopes
 
     /**
-     * Scope a query to retrieve the department with uuid.
+     * Scope a query to retrieve the leave type with uuid.
      */
     #[Scope]
     protected function withUuid(Builder $query, string $id): void

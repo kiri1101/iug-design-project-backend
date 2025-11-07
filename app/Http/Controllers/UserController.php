@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendUserCredentials;
 use Exception;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\UserResource;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController;
 use App\Models\Department;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends BaseController
 {
@@ -39,15 +42,21 @@ class UserController extends BaseController
 
         $role = Role::withUuid($createUserRequest->input('position')['id'])->first();
         $department = Department::withUuid($createUserRequest->input('department')['id'])->first();
+        $defaultPassword = Str::random(8);
 
         try {
-            $user = User::create([
-                'uuid' => Str::uuid()->toString(),
-                'first_name' => $createUserRequest->input('firstName'),
-                'last_name' => $createUserRequest->input('lastName'),
+            $user = User::createOrRestore([
+                'first_name' => strtolower($createUserRequest->input('firstName')),
+                'last_name' => strtolower($createUserRequest->input('lastName')),
                 'email' => $createUserRequest->input('mailingAddress'),
                 'phone' => str_replace('-', '', $createUserRequest->input('phoneNumber')),
-                'password' => Hash::make('123123123'),
+            ], [
+                'uuid' => Str::uuid()->toString(),
+                'first_name' => strtolower($createUserRequest->input('firstName')),
+                'last_name' => strtolower($createUserRequest->input('lastName')),
+                'email' => $createUserRequest->input('mailingAddress'),
+                'phone' => str_replace('-', '', $createUserRequest->input('phoneNumber')),
+                'password' => Hash::make($defaultPassword),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -66,7 +75,23 @@ class UserController extends BaseController
                 'updated_at' => now(),
             ]);
 
+            // create internal notification
+            Notification::create([
+                'uuid' => Str::uuid()->toString(),
+                'type' => 1,
+                'user_id' => $user->id,
+                'subject' => 'Welcome to IUG',
+                'message' => "Your default account credentials are as shown as follows: pseudo: $user->email, password: xxxxxxxx",
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             DB::commit();
+
+            // notify user with credentials
+            Mail::to($user->email)->send(
+                new SendUserCredentials($user, $defaultPassword)->afterCommit()
+            );
 
             return $this->successResponse('User created successfully.', [
                 'user' => new UserResource($user)
@@ -89,8 +114,8 @@ class UserController extends BaseController
 
         try {
             $user->update([
-                'first_name' => $createUserRequest->input('firstName'),
-                'last_name' => $createUserRequest->input('lastName'),
+                'first_name' => strtolower($createUserRequest->input('firstName')),
+                'last_name' => strtolower($createUserRequest->input('lastName')),
                 'email' => $createUserRequest->input('mailingAddress'),
                 'phone' => str_replace('-', '', $createUserRequest->input('phoneNumber')),
             ]);
@@ -125,6 +150,8 @@ class UserController extends BaseController
     public function delete(User $user): JsonResponse
     {
         $user->tokens()->delete();
+
+        $user->roles()->detach();
 
         $user->delete();
 
