@@ -24,7 +24,7 @@ class RegistrationController extends BaseController
                 'first_name' => $storeUserRequest->input('firstName'),
                 'last_name' => $storeUserRequest->input('lastName'),
                 'email' => $storeUserRequest->input('mailingAddress'),
-                'phone' => $storeUserRequest->input('phoneNumber'),
+                'phone' => str_replace('-', '', $storeUserRequest->input('phoneNumber')),
                 'password' => Hash::make($storeUserRequest->input('secret')),
                 'created_at' => now(),
                 'updated_at' => now(),

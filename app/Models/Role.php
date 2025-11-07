@@ -14,7 +14,14 @@ class Role extends Model
 
     public const int CEO = 1;
     public const int DHR = 2;
-    public const int EMPLOYEE = 8;
+    public const int DT = 3;
+    public const int DF = 4;
+    public const int DP = 5;
+    public const int RHR = 6;
+    public const int RT = 7;
+    public const int RF = 8;
+    public const int RP = 9;
+    public const int EMPLOYEE = 10;
 
     /**
      * The attributes that are mass assignable.

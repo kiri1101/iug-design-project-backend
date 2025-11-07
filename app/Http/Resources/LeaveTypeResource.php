@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RoleResource extends JsonResource
+class LeaveTypeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +16,7 @@ class RoleResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
-            'slug' => $this->code,
-            'name' => $this->name,
+            'name' => $this->name
         ];
     }
 }

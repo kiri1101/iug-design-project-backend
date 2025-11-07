@@ -45,6 +45,13 @@ class RoleSeeder extends Seeder
             ],
             [
                 'uuid' => Str::uuid()->toString(),
+                'name' => 'Director of Product Department',
+                'code' => 'dp',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'uuid' => Str::uuid()->toString(),
                 'name' => 'Manager of HR Department',
                 'code' => 'mhr',
                 'created_at' => now(),
@@ -66,11 +73,18 @@ class RoleSeeder extends Seeder
             ],
             [
                 'uuid' => Str::uuid()->toString(),
+                'name' => 'Manager of Product Department',
+                'code' => 'mp',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'uuid' => Str::uuid()->toString(),
                 'name' => 'Employee',
                 'code' => 'emp',
                 'created_at' => now(),
                 'updated_at' => now()
-            ]
+            ],
         ]);
     }
 }
