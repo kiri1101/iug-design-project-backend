@@ -21,9 +21,9 @@ class LeaveStatusRequest extends FormRequest
      */
     public function rules(): array
     {
-        // 1 => submit, 2 => superior validate, 3 => HR validate, 4 => Employee back, 5 => HR validate return
+        // 1 => submit, 2 => superior validate, 3 => HR validate, 4 => Employee back, 5 => HR validate return, 6 => Reject
         return [
-            'action' => 'required|in:1,2,3,4,5,'
+            'action' => 'required|in:1,2,3,4,5,6'
         ];
     }
 }

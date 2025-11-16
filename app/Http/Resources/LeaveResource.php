@@ -53,10 +53,19 @@ class LeaveResource extends JsonResource
                 ],
                 7 => [
                     'label' => 'Absence overdue',
+                    'color' => 'fuchsia',
+                    'level' => 7
+                ],
+                8 => [
+                    'label' => 'Rejected',
                     'color' => 'red',
                     'level' => 7
                 ],
-                default => 'Pending',
+                default => [
+                    'label' => 'Pending',
+                    'color' => 'yellow',
+                    'level' => 0
+                ],
             },
             'type' => new LeaveTypeResource($this->leaveType)
         ];

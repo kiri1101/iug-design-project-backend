@@ -24,7 +24,8 @@ return new class extends Migration
             $table->text('cause');
             $table->string('departure');
             $table->string('return');
-            $table->enum('status', [1, 2, 3, 4, 5, 6, 7])->comment('1 => pending, 2 => awaiting superior validation, 3 => awaiting hr validation, 4 => leave validated, 5 => Employee back, 6 => HR confirmed return, 7 => deadline overdue');
+            $table->text('comment')->nullable();
+            $table->enum('status', [1, 2, 3, 4, 5, 6, 7, 8])->comment('1 => pending, 2 => awaiting superior validation, 3 => awaiting hr validation, 4 => leave validated, 5 => Employee back, 6 => HR confirmed return, 7 => deadline overdue, 8 => Rejected');
             $table->timestamps();
         });
     }

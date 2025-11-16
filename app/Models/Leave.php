@@ -14,6 +14,7 @@ class Leave extends Model
     public const int RETURNED_FROM_LEAVE = 5;
     public const int HR_CONFIRM_RETURN = 6;
     public const int RETURN_OVERDUE = 7;
+    public const int REJECT = 8;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +29,7 @@ class Leave extends Model
         'departure',
         'return',
         'status',
+        'comment',
     ];
 
     // Relationships
