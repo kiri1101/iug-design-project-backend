@@ -295,7 +295,7 @@ class LeaveController extends BaseController
     {
         if ($leave->user->profile->department->id === Department::TECHNICAL) {
             if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::DT)) {
-                $receiverRoles = Role::CEO;
+                $receiverRoles = [Role::CEO];
             } else if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::RT)) {
                 match ($action) {
                     'send' => $receiverRoles = [Role::DT],
@@ -317,7 +317,7 @@ class LeaveController extends BaseController
             }
         } else if ($leave->user->profile->department->id === Department::HR) {
             if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::DHR)) {
-                $receiverRoles = Role::CEO;
+                $receiverRoles = [Role::CEO];
             } else if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::RHR)) {
                 match ($action) {
                     'send' => $receiverRoles = [Role::DHR],
@@ -339,7 +339,7 @@ class LeaveController extends BaseController
             }
         } else if ($leave->user->profile->department->id === Department::FINANCIAL) {
             if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::DF)) {
-                $receiverRoles = Role::CEO;
+                $receiverRoles = [Role::CEO];
             } else if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::RF)) {
                 match ($action) {
                     'send' => $receiverRoles = [Role::DF],
@@ -357,6 +357,28 @@ class LeaveController extends BaseController
                     'back' => $receiverRoles = [Role::DF, Role::RF, Role::DHR, Role::RHR],
                     'confirm' => $receiverRoles = [Role::DF, Role::RF, Role::DHR, Role::RHR],
                     'reject' => $receiverRoles = [Role::DF, Role::RF, Role::DHR, Role::RHR],
+                };
+            }
+        } else if ($leave->user->profile->department->id === Department::PRODUCT) {
+            if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::DP)) {
+                $receiverRoles = [Role::CEO];
+            } else if ($leave->user->roles->contains(fn(Role $role) => $role->id === Role::RP)) {
+                match ($action) {
+                    'send' => $receiverRoles = [Role::DP],
+                    'superior' => $receiverRoles =  [Role::DHR],
+                    'grant' => $receiverRoles = [Role::DP, Role::DHR],
+                    'back' => $receiverRoles = [Role::DP, Role::DHR],
+                    'confirm' => $receiverRoles = [Role::DP, Role::DHR],
+                    'reject' => $receiverRoles = [Role::DP, Role::RHR],
+                };
+            } else {
+                match ($action) {
+                    'send' => $receiverRoles = [Role::DP, Role::RP],
+                    'superior' => $receiverRoles =  [Role::DHR, Role::RHR],
+                    'grant' => $receiverRoles = [Role::DP, Role::RP, Role::DHR, Role::RHR],
+                    'back' => $receiverRoles = [Role::DP, Role::RP, Role::DHR, Role::RHR],
+                    'confirm' => $receiverRoles = [Role::DP, Role::RP, Role::DHR, Role::RHR],
+                    'reject' => $receiverRoles = [Role::DP, Role::RP, Role::DHR, Role::RHR],
                 };
             }
         } else {
